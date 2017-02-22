@@ -5,7 +5,7 @@ import util from 'util';
 import config from './config/config';
 import app from './config/express';
 
-const debug = require('debug')('express-mongoose-es6-rest-api:index');
+const debug = require('debug')('api:index');
 
 // make bluebird default Promise
 Promise = require('bluebird'); // eslint-disable-line no-global-assign
@@ -14,12 +14,14 @@ Promise = require('bluebird'); // eslint-disable-line no-global-assign
 mongoose.Promise = Promise;
 
 // connect to mongo db
-const mongoUri = `${config.mongo.host}:${config.mongo.port}`;
+const mongoUri = `mongodb://${config.mongo.user}:${config.mongo.password}@${config.mongo.host}:${config.mongo.port}/${config.mongo.db}`;
 mongoose.connect(mongoUri, { server: { socketOptions: { keepAlive: 1 } } });
 mongoose.connection.on('error', () => {
-  throw new Error(`unable to connect to database: ${config.db}`);
+  throw new Error(`unable to connect to database: ${mongoUri}`);
 });
-
+mongoose.connection.on('open', () => {
+  debug('\n✔ MongoDB Connection opened.');
+});
 // print mongoose logs in dev env
 if (config.MONGOOSE_DEBUG) {
   mongoose.set('debug', (collectionName, method, query, doc) => {
@@ -32,7 +34,7 @@ if (config.MONGOOSE_DEBUG) {
 if (!module.parent) {
   // listen on port config.port
   app.listen(config.port, () => {
-    debug(`server started on port ${config.port} (${config.env})`);
+    debug(`Express server listening on port ${config.port} in (${config.env}) mode`);
   });
 }
 

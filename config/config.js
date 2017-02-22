@@ -21,7 +21,13 @@ const envVarsSchema = Joi.object({
   MONGO_HOST: Joi.string().required()
     .description('Mongo DB host url'),
   MONGO_PORT: Joi.number()
-    .default(27017)
+    .default(27017),
+  MONGO_USER: Joi.string()
+    .description('Mongo DB user '),
+  MONGO_PASSWORD: Joi.string()
+    .description('Mongo DB password'),
+  MONGO_DB: Joi.string()
+    .description('Mongo DB db')
 }).unknown()
   .required();
 
@@ -37,7 +43,10 @@ const config = {
   jwtSecret: envVars.JWT_SECRET,
   mongo: {
     host: envVars.MONGO_HOST,
-    port: envVars.MONGO_PORT
+    port: envVars.MONGO_PORT,
+    user: envVars.MONGO_USER,
+    password: envVars.MONGO_PASSWORD,
+    db: envVars.MONGO_DB
   }
 };
 
