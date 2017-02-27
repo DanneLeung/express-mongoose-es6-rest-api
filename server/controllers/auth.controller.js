@@ -3,11 +3,13 @@ import httpStatus from 'http-status';
 import APIError from '../helpers/APIError';
 import config from '../../config/config';
 
+import User from '../models/user.model';
+
 // sample user, used for authentication
-const user = {
-  username: 'react',
-  password: 'express'
-};
+// const user = {
+//   username: 'react',
+//   password: 'express'
+// };
 
 /**
  * Returns jwt token if valid username and password is provided
@@ -19,18 +21,35 @@ const user = {
 function login(req, res, next) {
   // Ideally you'll fetch this from the db
   // Idea here was to show how jwt works with simplicity
-  if (req.body.username === user.username && req.body.password === user.password) {
-    const token = jwt.sign({
-      username: user.username
-    }, config.jwtSecret);
-    return res.json({
-      token,
-      username: user.username
+  User.find(req.body.username)
+    .then((user) => {
+      if (req.body.username === user.username) {
+        if (req.body.password === user.password) {
+          const token = jwt.sign({
+            username: user.username
+          }, config.jwtSecret);
+          return res.json({
+            token,
+            user: {
+              username: user.username
+            },
+            redirect: '/'
+          });
+        } else {
+          return res.json({
+            error: {
+              name: 'InvalidCredentialsError'
+            }
+          });
+        }
+      }
+      const err = new APIError('Authentication error', httpStatus.UNAUTHORIZED, true);
+      return next(err);
+    })
+    .catch((e) => {
+      const err = new APIError('Authentication error', httpStatus.UNAUTHORIZED, true);
+      return next(err);
     });
-  }
-
-  const err = new APIError('Authentication error', httpStatus.UNAUTHORIZED, true);
-  return next(err);
 }
 
 /**
@@ -47,4 +66,7 @@ function getRandomNumber(req, res) {
   });
 }
 
-export default { login, getRandomNumber };
+export default {
+  login,
+  getRandomNumber
+};

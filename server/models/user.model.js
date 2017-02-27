@@ -32,8 +32,7 @@ const UserSchema = new mongoose.Schema({
 /**
  * Methods
  */
-UserSchema.method({
-});
+UserSchema.method({});
 
 /**
  * Statics
@@ -55,16 +54,31 @@ UserSchema.statics = {
         return Promise.reject(err);
       });
   },
-
+  // find(username) {
+  //   return this.findOne({
+  //     'username': username
+  //   }).exec().then((user) => {
+  //     if (user) {
+  //       return user;
+  //     }
+  //     const err = new APIError('No such user exists!', httpStatus.NOT_FOUND);
+  //     return Promise.reject(err);
+  //   });
+  // },
   /**
    * List users in descending order of 'createdAt' timestamp.
    * @param {number} skip - Number of users to be skipped.
    * @param {number} limit - Limit number of users to be returned.
    * @returns {Promise<User[]>}
    */
-  list({ skip = 0, limit = 50 } = {}) {
+  list({
+    skip = 0,
+    limit = 50
+  } = {}) {
     return this.find()
-      .sort({ createdAt: -1 })
+      .sort({
+        createdAt: -1
+      })
       .skip(skip)
       .limit(limit)
       .exec();

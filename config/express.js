@@ -22,7 +22,9 @@ if (config.env === 'development') {
 
 // parse body params and attache them to req.body
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 app.use(cookieParser());
 app.use(compress());
@@ -32,7 +34,10 @@ app.use(methodOverride());
 app.use(helmet());
 
 // enable CORS - Cross Origin Resource Sharing
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:8080',
+  credentials: true
+}));
 
 // enable detailed API logging in dev env
 if (config.env === 'development') {
