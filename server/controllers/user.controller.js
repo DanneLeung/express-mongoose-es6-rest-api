@@ -23,13 +23,13 @@ function get(req, res) {
 /**
  * Create new user
  * @property {string} req.body.username - The username of user.
- * @property {string} req.body.mobileNumber - The mobileNumber of user.
+ * @property {string} req.body.mobile - The mobile of user.
  * @returns {User}
  */
 function create(req, res, next) {
   const user = new User({
     username: req.body.username,
-    mobileNumber: req.body.mobileNumber
+    mobile: req.body.mobile
   });
 
   user.save()
@@ -40,13 +40,13 @@ function create(req, res, next) {
 /**
  * Update existing user
  * @property {string} req.body.username - The username of user.
- * @property {string} req.body.mobileNumber - The mobileNumber of user.
+ * @property {string} req.body.mobile - The mobile of user.
  * @returns {User}
  */
 function update(req, res, next) {
   const user = req.user;
   user.username = req.body.username;
-  user.mobileNumber = req.body.mobileNumber;
+  user.mobile = req.body.mobile;
 
   user.save()
     .then(savedUser => res.json(savedUser))
@@ -60,9 +60,24 @@ function update(req, res, next) {
  * @returns {User[]}
  */
 function list(req, res, next) {
-  const { limit = 50, skip = 0 } = req.query;
-  User.list({ limit, skip })
-    .then(users => res.json(users))
+  const {
+    limit = 50, skip = 0
+  } = req.query;
+  User.list({
+      limit,
+      skip
+    })
+    .then(users => res.json({
+      'total': 200,
+      'per_page': 15,
+      'current_page': 1,
+      'last_page': 14,
+      'next_page_url': 'http://localhost:4040/api/users?page=2',
+      'prev_page_url': null,
+      'from': 1,
+      'to': 15,
+      data: users
+    }))
     .catch(e => next(e));
 }
 
@@ -77,4 +92,11 @@ function remove(req, res, next) {
     .catch(e => next(e));
 }
 
-export default { load, get, create, update, list, remove };
+export default {
+  load,
+  get,
+  create,
+  update,
+  list,
+  remove
+};
