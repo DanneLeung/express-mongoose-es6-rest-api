@@ -14,7 +14,8 @@ export default {
   updateUser: {
     body: {
       username: Joi.string().required(),
-      mobile: Joi.string().regex(/^1[0-9]{12}$/).required()
+      // mobile: Joi.string().regex(/^1[0-9]{12}$/).required()
+      mobile: Joi.string().required()
     },
     params: {
       userId: Joi.string().hex().required()

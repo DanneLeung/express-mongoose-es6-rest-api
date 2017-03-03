@@ -14,12 +14,20 @@ const UserSchema = new mongoose.Schema({
   mobile: {
     type: String,
     required: true
-    // match: [/^1[0-9]{12}$/, 'The value of path {PATH} ({VALUE}) is not a valid mobile number.']
+  }, // match: [/^1[0-9]{12}$/, 'The value of path {PATH} ({VALUE}) is not a valid mobile number.'] 
+  email: {
+    type: String
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  password: {
+    type: String
+  },
+  // match: [/^1[0-9]{12}$/, 'The value of path {PATH} ({VALUE}) is not a valid mobile number.']
+  enabled: {
+    type: Boolean,
+    default: true
   }
+}, {
+  timestamps: {}
 });
 
 /**
@@ -54,17 +62,29 @@ UserSchema.statics = {
         return Promise.reject(err);
       });
   },
-  // find(username) {
-  //   return this.findOne({
-  //     'username': username
-  //   }).exec().then((user) => {
-  //     if (user) {
-  //       return user;
-  //     }
-  //     const err = new APIError('No such user exists!', httpStatus.NOT_FOUND);
-  //     return Promise.reject(err);
-  //   });
-  // },
+  modify(id, update) {
+    return this.findByIdAndUpdate(id, update, {
+      new: true
+    }).exec().then((updateUser) => {
+      global.console.log('********', updateUser);
+      if (updateUser) {
+        return updateUser;
+      }
+      const err = new APIError('Error while updating user!', httpStatus.NOT_FOUND);
+      return Promise.reject(err);
+    });
+  },
+  findByUsername(username) {
+    return this.findOne({
+      "username": username
+    }).exec().then((user) => {
+      if (user) {
+        return user;
+      }
+      const err = new APIError('No such user exists!', httpStatus.NOT_FOUND);
+      return Promise.reject(err);
+    });
+  },
   /**
    * List users in descending order of 'createdAt' timestamp.
    * @param {number} skip - Number of users to be skipped.

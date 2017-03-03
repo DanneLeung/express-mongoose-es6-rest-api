@@ -27,11 +27,9 @@ function get(req, res) {
  * @returns {User}
  */
 function create(req, res, next) {
-  const user = new User({
-    username: req.body.username,
-    mobile: req.body.mobile
-  });
-
+  const user = new User(req.body);
+  delete user._id;
+  user._id = null;
   user.save()
     .then(savedUser => res.json(savedUser))
     .catch(e => next(e));
@@ -44,11 +42,13 @@ function create(req, res, next) {
  * @returns {User}
  */
 function update(req, res, next) {
-  const user = req.user;
-  user.username = req.body.username;
-  user.mobile = req.body.mobile;
-
-  user.save()
+  const user = req.body;
+  // user.username = req.body.username;
+  // user.mobile = req.body.mobile;
+  // user.save()
+  //   .then(savedUser => res.json(savedUser))
+  //   .catch(e => next(e));
+  User.modify(req.body._id, user)
     .then(savedUser => res.json(savedUser))
     .catch(e => next(e));
 }

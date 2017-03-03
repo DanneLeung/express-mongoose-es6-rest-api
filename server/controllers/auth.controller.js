@@ -21,7 +21,7 @@ import User from '../models/user.model';
 function login(req, res, next) {
   // Ideally you'll fetch this from the db
   // Idea here was to show how jwt works with simplicity
-  User.find(req.body.username)
+  User.findByUsername(req.body.username)
     .then((user) => {
       if (req.body.username === user.username) {
         if (req.body.password === user.password) {
